@@ -1,7 +1,6 @@
 package movies.spring.data.neo4j.domain;
 
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,45 +15,45 @@ import org.neo4j.ogm.annotation.StartNode;
  * @author C Gaines
  */
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-@RelationshipEntity(type = "SURGING_ON")
-public class Score {
+@RelationshipEntity(type = "ORG_SIZED_AS")
+public class Size {
 
     @GraphId
     private Long id;
 
-    private Collection<String> scores = new ArrayList<>();
+    private Collection<String> sizes = new ArrayList<>();
 
     @StartNode
-    private Topic topic;
+    private IndustrySize isize;
 
     @EndNode
     private Organization organization;
 
-    public Score() {
+    public Size() {
     }
 
-    public Score(Organization organization, Topic topic) {
+    public Size(Organization organization, IndustrySize isize) {
         this.organization = organization;
-        this.topic = topic;
+        this.isize = isize;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Collection<String> getScores() {
-        return scores;
+    public Collection<String> getSizes() {
+        return sizes;
     }
 
     public Organization getOrganization() {
         return organization;
     }
 
-    public Topic getTopic() {
-        return topic;
+    public IndustrySize getIndustrySize() {
+        return isize;
     }
 
-    public void addScoreName(String name) {
-        this.scores.add(name);
+    public void addSizeName(String name) {
+        this.sizes.add(name);
     }
 }
