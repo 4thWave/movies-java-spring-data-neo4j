@@ -58,7 +58,8 @@ public class MovieRepositoryTest {
 
 	@After
 	public void tearDown() {
-		session.purgeDatabase();
+
+		//session.purgeDatabase();
 	}
 
 	/**

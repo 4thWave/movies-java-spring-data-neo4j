@@ -15,11 +15,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(collectionResourceRel = "organizations", path = "organizations")
 public interface OrganizationRepository extends PagingAndSortingRepository<Organization, Long> {
 
-    Organization findByTitle(@Param("title") String title);
+    Organization findByTitle(@Param("name") String title);
 
     Collection<Organization> findByTitleLike(@Param("title") String title);
 
-    @Query("MATCH (m:Organization)<-[r:SURGING_ON]-(a:Topic) RETURN m,r,a LIMIT {limit}")
+    @Query("MATCH (m:Organization)-[r:SURGING_ON]->(a:Topic) RETURN m,r,a LIMIT {limit}")
     Collection<Organization> graph(@Param("limit") int limit);
 }
 
