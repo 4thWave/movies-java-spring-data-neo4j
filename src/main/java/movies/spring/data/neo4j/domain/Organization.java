@@ -25,9 +25,13 @@ public class Organization {
     private int released;
 
     private String tagline;
+    private String name;
 
-    @Relationship(type = "SURGING_FOR", direction = Relationship.INCOMING)
+    @Relationship(type = "SURGING_FOR", direction = Relationship.OUTGOING)
     private List<Score> scores = new ArrayList<>();
+
+    @Relationship(type = "ORG_SIZED_AS", direction = Relationship.OUTGOING)
+    private List<IndustrySize> sizes = new ArrayList<>();
 
     public Organization() {
     }
@@ -50,6 +54,10 @@ public class Organization {
         return title;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public int getReleased() {
         return released;
     }
@@ -58,11 +66,15 @@ public class Organization {
         return tagline;
     }
 
+    public Collection<IndustrySize> getIndustrySizes() {
+        return sizes;
+    }
+
     public Collection<Score> getScores() {
         return scores;
     }
 
-    public void addScore(Score score) {
-        this.scores.add(score);
+    public void addIndustrySize(IndustrySize size) {
+        this.sizes.add(size);
     }
 }

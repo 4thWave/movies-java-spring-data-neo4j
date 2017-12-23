@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.util.Collection;
 
 import movies.spring.data.neo4j.domain.IndustrySize;
-import movies.spring.data.neo4j.domain.Organization;
+import movies.spring.data.neo4j.domain.BestSiteOrganization;
 import movies.spring.data.neo4j.domain.Topic;
 import movies.spring.data.neo4j.domain.Score;
 import org.junit.After;
@@ -26,33 +26,32 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
-public class OrganizationRepositoryTest {
+public class BestSiteOrganizationRepositoryTest {
 
     @Autowired
     private Session session;
 
     @Autowired
-    private OrganizationRepository instance;
+    private BestSiteOrganizationRepository instance;
 
-    @Autowired
-    private TopicRepository topicRepository;
 
-    public OrganizationRepositoryTest() {
+
+    public BestSiteOrganizationRepositoryTest() {
     }
 
     @Before
     public void setUp() {
-     //   Organization portalco = new Organization("The Portalco", 1999);
+        //   Organization portalco = new Organization("The Portalco", 1999);
 
-      //  instance.save(portalco);
-
-//
-//
-     //   Score neo = new Score(portalco, graphtop);
-     //   neo.addScoreName("92");
+        //  instance.save(portalco);
 
 //
-      //  instance.save(portalco);
+//
+        //   Score neo = new Score(portalco, graphtop);
+        //   neo.addScoreName("92");
+
+//
+        //  instance.save(portalco);
     }
 
     @After
@@ -68,9 +67,9 @@ public class OrganizationRepositoryTest {
     public void testFindByTitle() {
 
         String title = "Lauren James Co";
-        Organization result = instance.findByTitle(title);
+        BestSiteOrganization result = instance.findByTitle(title);
         assertNotNull(result);
-       // assertEquals(1999, result.getReleased());
+        // assertEquals(1999, result.getReleased());
     }
 
 
@@ -80,11 +79,11 @@ public class OrganizationRepositoryTest {
      */
     @Test
     public void testGraph() {
-        Collection<Organization> graph = instance.graph(5);
+        Collection<BestSiteOrganization> graph = instance.graphorg(5);
         System.out.println("The graph is "+ graph.size());
         assertEquals(2, graph.size());
 
 
-      //  assertEquals("Keanu Reeves", movie.getRoles().iterator().next().getPerson().getName());
+        //  assertEquals("Keanu Reeves", movie.getRoles().iterator().next().getPerson().getName());
     }
 }

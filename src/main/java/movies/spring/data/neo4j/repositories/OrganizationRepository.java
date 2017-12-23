@@ -19,7 +19,9 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
 
     Collection<Organization> findByTitleLike(@Param("title") String title);
 
-    @Query("MATCH (m:Organization)-[r:SURGING_ON]->(a:Topic) RETURN m,r,a LIMIT {limit}")
+   // @Query("MATCH (n:Organization)-[s:SURGING_ON]->(t:Topic) WHERE t.name = \"Graph Databases\" and s.weight>80  RETURN n,s,t  LIMIT {limit}")
+
+    @Query("MATCH (n:IndustrySize)-[:ORG_SIZED_AS]->(o:Organization)-[s:SURGING_ON]->(t:Topic)-[:HAS_A]->(c:Category) WHERE s.weight>80 and s.confidence='A'  and n.name = 'Small (10 - 49 Employees)' AND s.weight>82  RETURN n,o,s,t,c LIMIT {limit}")
     Collection<Organization> graph(@Param("limit") int limit);
 }
 
