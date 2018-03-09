@@ -23,9 +23,9 @@ public class ImportController {
     @Transactional
     @RequestMapping("/api/reload")
     public ResponseEntity reload() {
-
+        System.out.println("api reload");
        // service.clearDatabase();
-        service.load();
+        service.myload();
 
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }

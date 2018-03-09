@@ -5,4 +5,7 @@ public interface ImportService {
     void clearDatabase();
 
     void load();
+    
+    void myload();
+     
 }
