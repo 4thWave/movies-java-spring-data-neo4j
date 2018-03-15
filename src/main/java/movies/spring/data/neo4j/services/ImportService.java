@@ -7,5 +7,7 @@ public interface ImportService {
     void load();
     
     void myload();
+    
+    void checkDomains();
      
 }

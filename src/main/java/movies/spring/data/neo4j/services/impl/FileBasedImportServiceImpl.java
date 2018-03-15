@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import movies.spring.data.neo4j.services.ImportService;
 import movies.spring.data.neo4j.domain.Domain;
-
+import movies.spring.data.neo4j.domain.ProDomain;
+import movies.spring.data.neo4j.domain.OrgPerson;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -65,41 +66,149 @@ public class FileBasedImportServiceImpl implements ImportService {
         String cqlFile = sb.toString();
         session.query(cqlFile, Collections.EMPTY_MAP);
     }
+        @Transactional
+     public void checkDomains() {
+         System.out.println("Opening data file reload");
+        File file = new File("/Volumes/edge2/procMaster_Surge_123117.csv");
+        CsvReader csvReader = new CsvReader();
+        StringBuilder sb = new StringBuilder();
+        int notfound = 0;
+       try (CsvParser csvParser = csvReader.parse(file, StandardCharsets.UTF_8)) {
+            CsvRow row;
+             try {
+                 while ((row = csvParser.nextRow()) != null)
+                 {
+                     
+                 
+                     for(int i=1; i<2; i++){
+                         try {
+                               row = csvParser.nextRow();
+                                System.out.println("Checking Domains ");
+                                
+                                
+                                
+                               sb.append(this.addCypherMergeOrganization(row.getField(1),resolveCompanyByDomain(row.getField(2)),"o"+String.valueOf(i))); 
+                               //
+                              // sb.append(appendCompanyByDomain(row.getField(2)));
+                               //
+                                System.out.println("Add Domains ");
+                                sb.append(" MERGE (o"+String.valueOf(i));
+                                sb.append(")-[:RELATES_TO_DOMAIN]->(domain:Domain {name : '");
+                                sb.append(resolveCompanyByDomain(row.getField(2)));
+                                sb.append("'})");
+                               
+                                 System.out.println("Adding Person ");
+                                sb.append(" MERGE (o"+String.valueOf(i));
+                                sb.append(")-[:EMPLOYS]->(person:Person {name : '");
+                                sb.append(getOrgPeople(row.getField(2)));
+                                sb.append("'})");
+                                
+                               
+                               
+                              } catch (IOException ex) {
+                                  System.out.println("IO Exception reading file ");
+                                 Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                                 
+                             }
+                         
+                     }
+                     
+                    System.out.println("!!! Firing Cypher " );
+                  
+                         this.exCypher(sb.toString());
+                        System.out.println("!!! Finished Cypher " );
+                        sb.delete(0, sb.length());
+                 }    
+             } catch (IOException ex) {
+                 Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         
+            
+           
+      
+    }   catch (IOException ex) {
+            Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     
+    }
+       
+     
  
     public void myload() {
          System.out.println("Opening data file reload");
         File file = new File("/Volumes/edge2/procMaster_Surge_123117.csv");
         CsvReader csvReader = new CsvReader();
-        // session.query("USING PERIODIC COMMIT 100 ;",Collections.EMPTY_MAP);
-        try (CsvParser csvParser = csvReader.parse(file, StandardCharsets.UTF_8)) {
+        StringBuilder sb = new StringBuilder();
+       try (CsvParser csvParser = csvReader.parse(file, StandardCharsets.UTF_8)) {
             CsvRow row;
-            try {
-                while ((row = csvParser.nextRow()) != null) {
-                
-                    System.out.println("Reading line " + row.getField(0));
-                  //  session.query("MERGE (ou:Organization {name : '"+row.getField(0)+"'})", Collections.EMPTY_MAP);
+             try {
+                 while ((row = csvParser.nextRow()) != null)
+                 {
+                     
                  
-                    this.addOrganization(row.getField(1),row.getField(2));
-                    System.out.println("Checking profound domain...");
-                    this.checkProfoundDomain(row.getField(2));
-                    System.out.println("returned...");
-                }   
-            } 
+                     for(int i=1; i<2; i++){
+                         try {
+                               row = csvParser.nextRow();
+                               sb.append(this.addCypherMergeOrganization(row.getField(1),row.getField(2),"o"+String.valueOf(i))); 
+                               
+                              } catch (IOException ex) {
+                                  System.out.println("IO Exception reading file ");
+                                 Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                                 
+                             }
+                         
+                     }
+                     
+                     System.out.println("!!! Firing Cypher " );
+                         this.exCypher(sb.toString());
+                         System.out.println("!!! Finished Cypher " );
+                         sb.delete(0, sb.length());
+                 }    
+             } catch (IOException ex) {
+                 Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         
             
-            catch (IOException ex) 
-            {
-                 System.out.println("Exception caught");
-                Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (IOException ex) 
-        {
+           
+      
+    }   catch (IOException ex) {
             Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+    
+    }
+       
+      
+  
+  
+    public String addCypherMergeOrganization(String inOrg,String inDomain,String inOrgVar) {
+         try {
+           //  System.out.println("Cypher fired... " + inOrg);
+            return "MERGE ("+inOrgVar+":Organization {name : '"+inOrg+"', domain : '"+inDomain+"'}) ";
+        
+         }
+          catch (Exception ex) 
+            {
+                  System.out.println("Error on " + inOrg);
+                  return null;
+            }
+    }
+    
+     @Transactional
+    public void exCypher(String inCypher) {
+         try {
+             System.out.println("!!!!Cypher fired !!!!" + inCypher.length());
+            session.query(inCypher, Collections.EMPTY_MAP);
+             System.out.println(" Success !!");
+         }
+          catch (Exception ex) 
+            {
+                  System.out.println("!!!!!!!!!!!! Error on " );
+                Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
     
     @Transactional
-    public void addOrganization(String inOrg,String inDomain) {
+    public void mergeOrganization(String inOrg,String inDomain) {
          try {
              System.out.println("Cypher fired... " + inOrg);
             session.query("MERGE (o:Organization {name : '"+inOrg+"', domain : '"+inDomain+"'});", Collections.EMPTY_MAP);
@@ -116,13 +225,51 @@ public class FileBasedImportServiceImpl implements ImportService {
        try {
             AuthRestTemplate restTemplate = new AuthRestTemplate("cisco-065ccfec619011e38f");
              
-            Domain domain = restTemplate.getForObject("https://api2.profound.net/domain/"+inDomain+"?view=enterprise", Domain.class);
+            ProDomain domain = restTemplate.getForObject("https://api2.profound.net/domain/"+inDomain+"?view=enterprise", ProDomain.class);
              System.out.println("Resolved Domain  " + domain.toString());
        }
         catch (RestClientException ex) 
             {
                   System.out.println("Checking Profound Error on " + ex);
                 Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       
+   }
+   
+   public String getOrgPeople(String inDomain){
+       try {
+            AuthRestTemplate restTemplate = new AuthRestTemplate("");
+              System.out.println("Checking Company for the following domain name=" + inDomain);
+            OrgPerson orgPerson = restTemplate.getForObject("http://theodoregamester-eval-test.apigee.net/locator-service-api?domain="+inDomain, OrgPerson.class);
+             System.out.println("Resolved Domain  " + orgPerson.toString());
+               System.out.println("Resolved attribute Domain  " + orgPerson.getDomainname());
+               return orgPerson.getFullName();
+       }
+        catch (RestClientException ex) 
+            {
+               
+                 System.out.println("Domain not found Error  " + ex);
+                  return "null";
+               // Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       
+   }
+   
+    public String resolveCompanyByDomain(String inDomain){
+       try {
+            AuthRestTemplate restTemplate = new AuthRestTemplate("");
+              System.out.println("Checking Company for the following domain name=" + inDomain);
+            Domain domain = restTemplate.getForObject("http://theodoregamester-eval-test.apigee.net/domain/"+inDomain, Domain.class);
+             System.out.println("Resolved Domain  " + domain.toString());
+               System.out.println("Resolved attribute Domain  " + domain.getDomainname());
+               return domain.getDomainname();
+       }
+        catch (RestClientException ex) 
+            {
+               
+                 System.out.println("Domain not found Error  " + ex);
+                  return "null";
+               // Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
        
    }

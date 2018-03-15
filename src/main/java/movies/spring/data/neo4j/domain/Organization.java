@@ -21,6 +21,9 @@ public class Organization {
     private Long id;
 
     private String title;
+    private String domain;
+
+   
 
     private int released;
 
@@ -42,6 +45,14 @@ public class Organization {
         this.released = released;
     }
 
+     public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+    
     public Long getId() {
         return id;
     }

@@ -12,29 +12,16 @@ public class Domain {
 
     private String type;
 
-    private String company_name;
-    private String mail_server_provider;
-    private String domain_classification;
+    private String company;
+    private String domainname;
+
+
 
      public Domain() {
+       System.out.println("Instance created");
     }
 
-    public void setMail_server_provider(String mail_server_provider) {
-        this.mail_server_provider = mail_server_provider;
-    }
-
-    public void setDomain_classification(String domain_classification) {
-        this.domain_classification = domain_classification;
-    }
-
-    public String getMail_server_provider() {
-        return mail_server_provider;
-    }
-
-    public String getDomain_classification() {
-        return domain_classification;
-    }
-
+   
    
     public String getType() {
         return type;
@@ -44,20 +31,27 @@ public class Domain {
         this.type = type;
     }
 
-    public String getCompany_name() {
-        return company_name;
+    public String getDomainname() {
+        return domainname;
+    }
+
+    public void setDomainname(String domainname) {
+        this.domainname = domainname;
+    }
+    public String getCompany() {
+        return company;
     }
     
 
-    public void setCompany_name(String company_name) {
-        this.company_name = company_name;
+    public void setCompany(String company_name) {
+        this.company = company_name;
     }
 
     @Override
     public String toString() {
         return "Domain{" +
-                "type='" + type + '\'' +
-                ", company_name=" + company_name +
+                "domainname='" + domainname + '\'' +
+                ", company=" + company +
                 '}';
     }
 }

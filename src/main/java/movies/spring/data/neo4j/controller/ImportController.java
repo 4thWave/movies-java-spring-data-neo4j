@@ -30,4 +30,13 @@ public class ImportController {
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
+     @Transactional
+    @RequestMapping("/api/checkdomains")
+    public ResponseEntity checkDomains() {
+        System.out.println("api reload");
+       // service.clearDatabase();
+        service.checkDomains();
+
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
+    }
 }
