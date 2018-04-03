@@ -32,13 +32,20 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 import com.fourthwave.connector.AuthRestTemplate;
+import movies.spring.data.neo4j.domain.RealOrganization;
+import movies.spring.data.neo4j.repositories.RealOrganizationRepository;
 /**
  * Created by markangrish on 18/01/2017.
  */
 @Service
 public class FileBasedImportServiceImpl implements ImportService {
 
-    private Session session;
+ 
+        @Autowired
+	private Session session;
+
+	@Autowired
+	private RealOrganizationRepository instance;
 
     @Autowired
     public FileBasedImportServiceImpl(Session session) {
@@ -83,7 +90,7 @@ public class FileBasedImportServiceImpl implements ImportService {
                      for(int i=1; i<2; i++){
                          try {
                                row = csvParser.nextRow();
-                                System.out.println("Checking Domains ");
+                                System.out.println("Checking Domain "+row.getField(2));
                                 
                                 
                                 
@@ -133,7 +140,7 @@ public class FileBasedImportServiceImpl implements ImportService {
     }
        
      
- 
+ @Transactional
     public void myload() {
          System.out.println("Opening data file reload");
         File file = new File("/Volumes/edge2/procMaster_Surge_123117.csv");
@@ -159,9 +166,16 @@ public class FileBasedImportServiceImpl implements ImportService {
                          
                      }
                      
-                     System.out.println("!!! Firing Cypher " );
-                         this.exCypher(sb.toString());
-                         System.out.println("!!! Finished Cypher " );
+                    // System.out.println("!!! Firing Cypher " );
+                    //     this.exCypher(sb.toString());
+                         
+                    //     System.out.println("!!! Finished Cypher " );
+                            System.out.println(".....Firing RealOrg Create " );
+                         RealOrganization matrix = new RealOrganization(row.getField(1),1999);
+
+                        instance.save(matrix);
+                        
+                          System.out.println(".....Complete Success RealOrg Create " );
                          sb.delete(0, sb.length());
                  }    
              } catch (IOException ex) {
@@ -257,17 +271,20 @@ public class FileBasedImportServiceImpl implements ImportService {
    
     public String resolveCompanyByDomain(String inDomain){
        try {
-            AuthRestTemplate restTemplate = new AuthRestTemplate("");
-              System.out.println("Checking Company for the following domain name=" + inDomain);
+           // AuthRestTemplate restTemplate = new AuthRestTemplate("cisco-065ccfec619011e38f");
+            RestTemplate restTemplate = new RestTemplate();
+              System.out.println("Checking Company for the following http://theodoregamester-eval-test.apigee.net/domain/" + inDomain);
             Domain domain = restTemplate.getForObject("http://theodoregamester-eval-test.apigee.net/domain/"+inDomain, Domain.class);
-             System.out.println("Resolved Domain  " + domain.toString());
-               System.out.println("Resolved attribute Domain  " + domain.getDomainname());
-               return domain.getDomainname();
+             System.out.println("querying Gateway  for URL  " + domain.toString());
+             System.out.println("Resolved Duns  " + domain.getDuns());
+             System.out.println("Resolved Company =  " + domain.getCompany());
+               return domain.getDuns();
        }
         catch (RestClientException ex) 
             {
                
                  System.out.println("Domain not found Error  " + ex);
+                 
                   return "null";
                // Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }

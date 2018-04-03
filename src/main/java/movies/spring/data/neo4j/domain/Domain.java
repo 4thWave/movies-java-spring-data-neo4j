@@ -14,7 +14,15 @@ public class Domain {
 
     private String company;
     private String domainname;
+    private String duns;
 
+    public String getDuns() {
+        return duns;
+    }
+
+    public void setDuns(String duns) {
+        this.duns = duns;
+    }
 
 
      public Domain() {
