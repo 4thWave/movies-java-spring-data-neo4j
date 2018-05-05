@@ -76,7 +76,7 @@ public class FileBasedImportServiceImpl implements ImportService {
         @Transactional
      public void checkDomains() {
          System.out.println("Opening data file reload");
-        File file = new File("/Volumes/edge2/procMaster_Surge_123117.csv");
+        File file = new File("/Users/tedgamester/Downloads/Fortune_500_Corporate_Headquarters.csv");
         CsvReader csvReader = new CsvReader();
         StringBuilder sb = new StringBuilder();
         int notfound = 0;
@@ -87,30 +87,15 @@ public class FileBasedImportServiceImpl implements ImportService {
                  {
                      
                  
-                     for(int i=1; i<2; i++){
+                     for(int i=1; i<20; i++){
                          try {
                                row = csvParser.nextRow();
-                                System.out.println("Checking Domain "+row.getField(2));
+                                System.out.println("Checking Domain "+row.getField(0));
                                 
                                 
-                                
-                               sb.append(this.addCypherMergeOrganization(row.getField(1),resolveCompanyByDomain(row.getField(2)),"o"+String.valueOf(i))); 
-                               //
-                              // sb.append(appendCompanyByDomain(row.getField(2)));
-                               //
-                                System.out.println("Add Domains ");
-                                sb.append(" MERGE (o"+String.valueOf(i));
-                                sb.append(")-[:RELATES_TO_DOMAIN]->(domain:Domain {name : '");
-                                sb.append(resolveCompanyByDomain(row.getField(2)));
-                                sb.append("'})");
-                               
-                                 System.out.println("Adding Person ");
-                                sb.append(" MERGE (o"+String.valueOf(i));
-                                sb.append(")-[:EMPLOYS]->(person:Person {name : '");
-                                sb.append(getOrgPeople(row.getField(2)));
-                                sb.append("'})");
-                                
-                               
+                                String theDomain = domainAppend(row.getField(0),row.getField(3),row.getField(5),row.getField(6),row.getField(7),row.getField(1)+"-"+row.getField(2);
+                               //sb.append(this.addCypherMergeOrganization(row.getField(1),resolveCompanyByDomain(row.getField(2)),"o"+String.valueOf(i))); 
+                              System.out.println("Found Domain ="+theDomain);
                                
                               } catch (IOException ex) {
                                   System.out.println("IO Exception reading file ");
@@ -274,7 +259,7 @@ public class FileBasedImportServiceImpl implements ImportService {
            // AuthRestTemplate restTemplate = new AuthRestTemplate("cisco-065ccfec619011e38f");
             RestTemplate restTemplate = new RestTemplate();
               System.out.println("Checking Company for the following http://theodoregamester-eval-test.apigee.net/domain/" + inDomain);
-            Domain domain = restTemplate.getForObject("http://theodoregamester-eval-test.apigee.net/domain/"+inDomain, Domain.class);
+            Domain domain = restTemplate.getForObject("'http://gnetworkinc-test.apigee.net/thedomainappender/rev"+inDomain, Domain.class);
              System.out.println("querying Gateway  for URL  " + domain.toString());
              System.out.println("Resolved Duns  " + domain.getDuns());
              System.out.println("Resolved Company =  " + domain.getCompany());
@@ -291,6 +276,27 @@ public class FileBasedImportServiceImpl implements ImportService {
        
    }
   
+     public String domainAppend(String inOrganization,String inAddress,String inCity,String inState,String inZip,String inPhone){
+       try {
+           // AuthRestTemplate restTemplate = new AuthRestTemplate("cisco-065ccfec619011e38f");
+            RestTemplate restTemplate = new RestTemplate();
+              System.out.println("Checking Gateway for the domain for " + inOrganization);
+            Domain domain = restTemplate.getForObject("http://gnetworkinc-test.apigee.net/thedomainappender/seq"+"?apikey=Y7zSsnAUkssl1NacDVHgSNAkKTv1v9Zb"+"&organization="+inOrganization+"&address="+inAddress+"&city="+inCity+"&state="+inState+"&zip="+inZip+"&phone="+inPhone+"&country=US", Domain.class);
+             System.out.println("querying Gateway  for URL  " + domain.toString());
+             System.out.println("Resolved Duns  " + domain.getDuns());
+             System.out.println("Resolved Company =  " + domain.getCompany());
+               return domain.getDuns();
+       }
+        catch (RestClientException ex) 
+            {
+               
+                 System.out.println("Domain not found Error  " + ex);
+                 
+                  return "null";
+               // Logger.getLogger(FileBasedImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       
+   }
 public void newload() throws Exception {
     
         Path path = Paths.get( ("csvfile"));
